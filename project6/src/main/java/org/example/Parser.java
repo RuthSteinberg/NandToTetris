@@ -20,16 +20,17 @@ public class Parser {
                 this.inputFile = file;
                 this.reader = new BufferedReader(new FileReader(file));
                 this.currentLine = reader.readLine();
-                this.instruction = reader.readLine();
+                this.instruction = null;
+                this.counter = 0;
             }
-        } catch(IOException e) {
-        System.out.println("IOException occurred while opening the file: " + e.getMessage());
-        e.printStackTrace();
-    }
+        } catch (IOException e) {
+            System.out.println("IOException occurred while opening the file: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // count the total number of lines in the file
-    private int countTotalLines() {
+    public int countTotalLines() {
         int lines = 0;
         try (BufferedReader tempReader = new BufferedReader(new FileReader(inputFile))) {
             while (tempReader.readLine() != null) {
@@ -43,30 +44,26 @@ public class Parser {
 
 
     public boolean hasMoreLines() throws IOException {
-        {
-            return countTotalLines() > counter;
-        }
+        return currentLine != null;
     }
+
     public String lineCleaner(String line) {
-        if (line.contains("//")) // if the string contain // shorter the string
+        if (line != null && line.contains("//")) // if the string contain // shorter the string
         {
             line = line.substring(0,line.indexOf("/"));
         }
-    return line;
+        return line.trim();
     }
+
     public void advance() throws IOException {
-        while (hasMoreLines()!=false) {
-            if(currentLine.contains("//")) {
-                currentLine = lineCleaner(currentLine);
-            }
-            if (!currentLine.isEmpty())
-            {
+        while (hasMoreLines()) {
+            currentLine = lineCleaner(currentLine);
+            if (!currentLine.isEmpty()) {
                 instruction = currentLine;
-                break;
+                System.out.println("Processed instruction: " + instruction);
             }
             currentLine = reader.readLine();
             counter++;
         }
     }
 }
-

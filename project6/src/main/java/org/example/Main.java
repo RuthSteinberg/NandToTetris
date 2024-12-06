@@ -6,23 +6,20 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         // נתיב הקובץ
-        File file = new File("C:\\Users\\ruths\\Downloads\\nand2tetris.zip\\nand2tetris\\projects\\6\\add");
+        File file = new File("C:\\Users\\ruths\\Downloads\\add.asm");
 
-
+        // יצירת אובייקט של Parser
         Parser parser = new Parser(file);
 
         try {
-
-            if (parser.hasMoreLines()) {
-                System.out.println("There are more lines to read.");
-            } else {
-                System.out.println("No more lines to read.");
-            }
-
+            // לולאת קריאה של כל ה-instructions
             while (parser.hasMoreLines()) {
                 parser.advance();  // Move to the next instruction
-                System.out.println("Current instruction: " + parser.instruction);
+                if (parser.instruction != null) {  // אם מצאנו instruction
+                    System.out.println("Current instruction: " + parser.instruction);  // הדפסת ה-instruction הנוכחי
+                }
             }
+
         } catch (IOException e) {
             System.out.println("IOException occurred: " + e.getMessage());
             e.printStackTrace();
