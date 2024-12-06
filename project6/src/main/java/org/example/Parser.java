@@ -11,6 +11,7 @@ public class Parser {
     public BufferedReader reader;
     public String currentLine;
     public String instruction;
+    public int counter;
 
 
     public Parser(File file) {
@@ -21,13 +22,30 @@ public class Parser {
                 this.currentLine = reader.readLine();
                 this.instruction = reader.readLine();
             }
-        } catch (Exception e) {
-            System.out.println("can't reading from the file");
-        }
+        } catch(IOException e) {
+        System.out.println("IOException occurred while opening the file: " + e.getMessage());
+        e.printStackTrace();
+    }
     }
 
+    // count the total number of lines in the file
+    private int countTotalLines() {
+        int lines = 0;
+        try (BufferedReader tempReader = new BufferedReader(new FileReader(inputFile))) {
+            while (tempReader.readLine() != null) {
+                lines++;
+            }
+        } catch (IOException e) {
+            System.out.println("IOException occurred while counting lines: " + e.getMessage());
+        }
+        return lines;
+    }
+
+
     public boolean hasMoreLines() throws IOException {
-        return currentLine != null; // if currentLine!=null return true - there is more line
+        {
+            return countTotalLines() > counter;
+        }
     }
     public String lineCleaner(String line) {
         if (line.contains("//")) // if the string contain // shorter the string
@@ -37,15 +55,17 @@ public class Parser {
     return line;
     }
     public void advance() throws IOException {
-        while (currentLine != null) {
+        while (hasMoreLines()!=false) {
             if(currentLine.contains("//")) {
                 currentLine = lineCleaner(currentLine);
             }
             if (!currentLine.isEmpty())
             {
                 instruction = currentLine;
+                break;
             }
             currentLine = reader.readLine();
+            counter++;
         }
     }
 }
