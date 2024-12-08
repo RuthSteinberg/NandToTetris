@@ -18,14 +18,13 @@ public class Parser {
     public String instruction;
     public int counter;
 
-
     public Parser(File file) {
         try {
             if (file.exists()) {
                 this.inputFile = file;
                 this.reader = new BufferedReader(new FileReader(file));
                 this.currentLine = reader.readLine();
-                this.instruction = null;
+                this.instruction = currentLine;
                 this.counter = 0;
             }
         } catch (IOException e) {
@@ -34,7 +33,13 @@ public class Parser {
         }
     }
 
-    /*// count the total number of lines in the file
+    public void resetToFirstInstruction() throws IOException {
+        reader.close(); // Close the current reader
+        this.reader = new BufferedReader(new FileReader(inputFile));
+        this.currentLine = reader.readLine(); // Set the current line to the first instruction
+        this.instruction = currentLine;
+    }
+
     public int countTotalLines() {
         int lines = 0;
         try (BufferedReader tempReader = new BufferedReader(new FileReader(inputFile))) {
@@ -46,10 +51,9 @@ public class Parser {
         }
         return lines;
     }
-*/
 
     public boolean hasMoreLines() throws IOException {
-        return currentLine != null;
+        return counter < countTotalLines() -1;
     }
 
     public String lineCleaner(String line) {
@@ -61,13 +65,18 @@ public class Parser {
     }
 
     public void advance() throws IOException {
-        if (hasMoreLines()) { //this was while
-            currentLine = lineCleaner(currentLine);
-            if (!currentLine.isEmpty()) {
-                instruction = currentLine;
-            }
-            currentLine = reader.readLine();
+        if (hasMoreLines()) {
             counter++;
+            currentLine = reader.readLine();
+            if (currentLine != null) {
+                currentLine = lineCleaner(currentLine);
+                if(!currentLine.isEmpty()) {
+                    instruction = currentLine;
+                } else {
+                    advance();
+                }
+            }
+            //currentLine = reader.readLine();
         }
     }
 
@@ -111,7 +120,7 @@ public class Parser {
         if(instructionType() == INSTRUCTION_Type.C_INSTRUCTION) {
             if(instruction.contains(";")) {
                 int start = instruction.indexOf(";");
-                return str = instruction.substring(start+1, instruction.length());
+                return str = instruction.substring(start+1); //instruction.substring(end+1);
             }
         }
         return str;
@@ -122,11 +131,11 @@ public class Parser {
         if(instructionType() == INSTRUCTION_Type.C_INSTRUCTION) {
             if(!instruction.contains(";")) {
                 int start = instruction.indexOf("=");
-                return str = instruction.substring(start+1, instruction.length());
+                str = instruction.substring(start+1);
             } else {
                 int start = instruction.indexOf("=");
                 int end = instruction.indexOf(";");
-                return str = instruction.substring(start+1, end);
+                str = instruction.substring(start+1, end);
             }
         }
         return str;

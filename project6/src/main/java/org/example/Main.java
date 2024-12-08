@@ -5,37 +5,31 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
-        // הגדרת הנתיב לקובץ הקלט
-        String filePath = "C:\\Users\\ruths\\Downloads\\add.asm"; // החלף לנתיב המתאים לקובץ שלך
 
-        // יצירת אובייקט File
+        String filePath = "C:\\Users\\ruths\\Downloads\\add.asm";
+
         File file = new File(filePath);
 
-        // בדיקה אם הקובץ קיים
         if (!file.exists()) {
             System.out.println("Error: File not found at path: " + filePath);
             return;
         }
 
-        // יצירת אובייקט Parser
         Parser parser = new Parser(file);
 
         try {
             System.out.println("Starting to process the file: " + filePath);
             System.out.println("------------------------------------------------");
 
-            // לולאה שמבצעת קריאות לכל הפונקציות על כל שורה בקובץ
             while (parser.hasMoreLines()) {
-                parser.advance(); // מעבד את השורה הנוכחית
+                parser.advance();
 
                 if (parser.instruction != null) {
                     System.out.println("Line " + parser.counter + ": " + parser.instruction);
 
-                    // בדיקת סוג ההוראה
                     INSTRUCTION_Type type = parser.instructionType();
                     System.out.println("Instruction Type: " + type);
 
-                    // הדפסת symbol, dest, comp, jump לפי סוג ההוראה
                     if (type == INSTRUCTION_Type.A_INSTRUCTION || type == INSTRUCTION_Type.L_INSTRUCTION) {
                         System.out.println("Symbol: " + parser.symbol());
                     } else if (type == INSTRUCTION_Type.C_INSTRUCTION) {
@@ -50,7 +44,7 @@ public class Main {
             System.out.println("Error while processing the file: " + e.getMessage());
             e.printStackTrace();
         } finally {
-            // סגירת BufferedReader
+
             try {
                 if (parser.reader != null) {
                     parser.reader.close();
